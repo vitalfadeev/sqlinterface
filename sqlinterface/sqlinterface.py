@@ -95,7 +95,7 @@ def format_indexes_to_sql(ctypes, ColumnsIndexs):
 
 def format_fts_indexes_to_sql(ColumnsIndexsFTS):
     """ in:  ["Col5", "Col6"]
-        out: FULLTEXT INDEX Col5, FULLTEXT INDEX Col6
+        out: Col5, Col6
     """
     sqls = []
 
@@ -293,9 +293,12 @@ class SQLInterface:
 
     @profile
     def SqlSearch( self, TABLEname, ColToReturnNames=None, ColToSearchIntoName=None, valueToSearch=None ):
-        """ in: [], "", ""
-            out: []
-
+        """ Select data from table
+            :param TABLEname:           ""  Table name
+            :param ColToReturnNames:    []  Columns to return
+            :param ColToSearchIntoName: []  Columns to search in
+            :param valueToSearch:       []  Values in search columns
+            :return:                    [[],[],]    rows
             Note: Select ColToReturnNames FROM table WHERE ColToSearchIntoName=valueToSearch AND …
         """
         Datas = []
@@ -331,8 +334,12 @@ class SQLInterface:
 
     @profile
     def SqlFTSearch( self, TABLEname, ColToReturnNames, ColToSearchIntoName, OneStringToSearchForIdenticalMatch ):
-        """ in: [], [], ""
-            out: []
+        """ Select data from table
+            :param TABLEname:                           ""  Table name
+            :param ColToReturnNames:                    []  Columns to return
+            :param ColToSearchIntoName:                 []  Columns for seach in
+            :param OneStringToSearchForIdenticalMatch:  ""  String to search
+            :return:                                    [[],[],] rows
 
             Note: WHERE MATCH(ColToSearchIntoNames[]) AGAINST( OneStringToSearchForIdenticalMatch IN NATURAL LANGUAGE MODE)
         """
@@ -363,10 +370,11 @@ class SQLInterface:
 
     @profile
     def SqlUpdate( self, TABLEname, ColsUpdate, ColsSearch ):
-        """ Update
+        """ Update data in table
             :param TABLEname    ""  ex: DataTable_1
             :param ColsUpdate   {}  ex: ColsSet:"ValueToReplaceInCol"
             :param ColsSearch   {}  ex: Col1:"ValueToSearch"
+            :return             Cursor (affected rows: c.rowcount, new id: c.lastrowid)
             Note: UPDATE TABLEname SET ColsSet.key = ColsSet.Value WHERE ColsSearch.key = ColsSearch.value
         """
         #
@@ -393,10 +401,10 @@ class SQLInterface:
 
     @profile
     def SqlInsert( self, TableName, ColSet ):
-        """
+        """ Insert data in table
             :param TableName:   "" Table
             :param ColSet:      {} Values to insert. ex: {'Col1':'The name', 'Col2':1}
-            :return:            id New id
+            :return:            Cursor (affected rows: c.rowcount, new id: c.lastrowid)
             Note: Dict(ColsSet:"ValueInCol")
             Note: INSERT INTO TableName (ColsSet.Key) VALUES (ColsSet.Value)
         """
@@ -427,6 +435,12 @@ class SQLInterface:
 
     @profile
     def SqlExecuteManyInsert( self, TableName, ColumnNames, ArrayData ):
+        """ Insert Many rows in table at once
+            :param TableName:   ""
+            :param ColumnNames: []
+            :param ArrayData:   [[], [],]
+            :return:            Cursor (affected rows: c.rowcount, new id: c.lastrowid)
+        """
         (cols_sql, vals_sql) = format_manyinsert_columns_to_sql( ColumnNames )
 
         sql = """
@@ -446,6 +460,12 @@ class SQLInterface:
 
     @profile
     def SqlExecuteManyRead( self, TABLEname, ColumnName, sqlWhere ):
+        """ Custom select with raw WHERE
+            :param TABLEname:   ""  Table name
+            :param ColumnName:  []  Columns to return
+            :param sqlWhere:    ""  Where expression without WHERE keyword. ex: "Col1 = 1 OR Col2 = 1"
+            :return:            [[], [], ]
+        """
         Datas = []
 
         #
