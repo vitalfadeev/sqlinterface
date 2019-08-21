@@ -273,7 +273,8 @@ class SQLInterface:
                 {}
                 {}
                 )
-                DEFAULT CHARSET=utf8;
+                DEFAULT CHARSET=utf8
+                ENGINE = InnoDB;
             """.format(
                 TABLEname,
                 cols_sql,
@@ -396,6 +397,7 @@ class SQLInterface:
         #
         c = self._db.cursor()
         c.execute(sql, values)
+        self._db.commit()
         return c
 
 
@@ -443,18 +445,23 @@ class SQLInterface:
         """
         (cols_sql, vals_sql) = format_manyinsert_columns_to_sql( ColumnNames )
 
-        sql = """
+        insert_sql = """
             INSERT INTO `{}`
             ({})
             VALUES
-            ({})
+            ({});
         """.format(
             TableName,
             cols_sql,
             vals_sql
         )
+
+        #
+        sql = insert_sql
+
         c = self.SQLExecuteMany( sql, ArrayData )
         self._db.commit()
+
         return c
 
 

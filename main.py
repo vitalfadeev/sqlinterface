@@ -36,7 +36,7 @@ def main():
     db.SqlCreateTable(TABLEname, ColumnsNamesType, ['Col2'], ['Col1', 'Col5', 'Col6'])
 
     # make data
-    INSERT_ROWS = 1000000
+    INSERT_ROWS = 10000
     data = make_test_data(INSERT_ROWS)
 
     # insert
