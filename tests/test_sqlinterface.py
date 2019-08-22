@@ -317,6 +317,26 @@ class MyTestCase(unittest.TestCase):
 
         db.SqlDropTable(TABLEname)
 
+
+    def test_24_SqlInsert_PK_rowid(self):
+        db = sqlinterface.SQLInterface()
+        db.UseDatabase(self.DBname)
+        TABLEname = "test_table"
+        ColumnsNamesType = ['ID:PrimaryKeyAuto', "Col1:Text", "Col2:INT", "Col3:FLOAT", "Col4:DATETIME", "Col5:Text",
+            "Col6:Text"]
+
+        db.SqlCreateTable(TABLEname, ColumnsNamesType)
+
+        c = db.SqlInsert(TABLEname, {'Col1': 'The cat 1', 'Col2': 1})
+        self.assertEqual(c.rowcount, 1)
+        self.assertEqual(c.lastrowid, 1)
+
+        c = db.SqlInsert(TABLEname, {'Col1': 'The cat 1', 'Col2': 1})
+        self.assertEqual(c.lastrowid, 2)
+
+        db.SqlDropTable(TABLEname)
+
+
 if __name__ == '__main__':
     unittest.main()
 
