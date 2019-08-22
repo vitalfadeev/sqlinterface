@@ -10,7 +10,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MY_CNF_PATH = os.path.join(BASE_DIR, 'my.cnf')
 
 type_map = {
-    "PrimaryKeyAuto": "MEDIUMINT NOT NULL AUTO_INCREMENT",
+    "PRIMARYKEYAUTO": "BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY",
     "VARCHAR"       : "VARCHAR(255) CHARACTER SET utf8",
     "TEXT"          : "TEXT CHARACTER SET utf8",
     "INT"           : "INT",

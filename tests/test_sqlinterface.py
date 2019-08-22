@@ -246,6 +246,77 @@ class MyTestCase(unittest.TestCase):
         db.SqlDropTable(TABLEname)
 
 
+    def test_19_Insert_Update_Select(self):
+        db = sqlinterface.SQLInterface()
+        db.UseDatabase(self.DBname)
+        TABLEname = "test_table"
+        ColumnsNamesType = ["Col1:Text", "Col2:INT", "Col3:FLOAT", "Col4:DATETIME", "Col5:Text", "Col6:Text"]
+        db.SqlCreateTable(TABLEname, ColumnsNamesType)
+
+        db.SqlInsert( TABLEname, {'Col1':'The cat 1', 'Col2':1} )
+        db.SqlUpdate( TABLEname, {'Col1':'The cat 2'}, {'Col2': 1})
+        res = db.SqlSearch( TABLEname, ['Col1'], ['Col1'], ['The cat 2'] )
+
+        self.assertEqual(res, (('The cat 2',),))
+
+        db.SqlDropTable(TABLEname)
+
+
+    def test_20_InsertMany_Update_Select(self):
+        db = sqlinterface.SQLInterface()
+        db.UseDatabase(self.DBname)
+        TABLEname = "test_table"
+        ColumnsNamesType = ["Col1:Text", "Col2:INT", "Col3:FLOAT", "Col4:DATETIME", "Col5:Text", "Col6:Text"]
+        db.SqlCreateTable(TABLEname, ColumnsNamesType)
+
+        db.SqlExecuteManyInsert( TABLEname, ['Col1', 'Col2'], [['The cat 1', 1], ['The cat 2', 2], ] )
+        db.SqlUpdate( TABLEname, {'Col1':'The cat 2'}, {'Col2': 1})
+        res = db.SqlSearch( TABLEname, ['Col1'], ['Col1'], ['The cat 2'] )
+
+        self.assertEqual(res, (('The cat 2',), ('The cat 2',)))
+
+        db.SqlDropTable(TABLEname)
+
+    def test_21_SqlUpdate_affected(self):
+        db = sqlinterface.SQLInterface()
+        db.UseDatabase(self.DBname)
+        TABLEname = "test_table"
+        ColumnsNamesType = ["Col1:Text", "Col2:INT", "Col3:FLOAT", "Col4:DATETIME", "Col5:Text", "Col6:Text"]
+        db.SqlCreateTable(TABLEname, ColumnsNamesType)
+
+        c = db.SqlInsert( TABLEname, {'Col1':'The cat 1', 'Col2':1} )
+        c = db.SqlUpdate( TABLEname, {'Col1':'The cat 2'}, {'Col2':1} )
+
+        self.assertEqual(c.rowcount, 1)
+
+        db.SqlDropTable(TABLEname)
+
+
+    def test_22_SqlInsert_PK(self):
+        db = sqlinterface.SQLInterface()
+        db.UseDatabase(self.DBname)
+        TABLEname = "test_table"
+        ColumnsNamesType = ['ID:PrimaryKeyAuto', "Col1:Text", "Col2:INT", "Col3:FLOAT", "Col4:DATETIME", "Col5:Text", "Col6:Text"]
+
+        db.SqlCreateTable(TABLEname, ColumnsNamesType)
+        c = db.SqlInsert( TABLEname, {'Col1':'The cat 1', 'Col2':1} )
+        c = db.SqlUpdate( TABLEname, {'Col1':'The cat 2'}, {'Col2':1} )
+
+        self.assertEqual(c.rowcount, 1)
+
+        db.SqlDropTable(TABLEname)
+
+
+    def test_23_SqlInsert_PK_Indexes(self):
+        db = sqlinterface.SQLInterface()
+        db.UseDatabase(self.DBname)
+        TABLEname = "test_table"
+        ColumnsNamesType = ['ID:PrimaryKeyAuto', "Col1:Text", "Col2:INT", "Col3:FLOAT", "Col4:DATETIME", "Col5:Text", "Col6:VARCHAR"]
+
+        db.SqlCreateTable(TABLEname, ColumnsNamesType, ['Col2', 'Col6'], ['Col1', 'Col5'])
+
+        db.SqlDropTable(TABLEname)
+
 if __name__ == '__main__':
     unittest.main()
 
