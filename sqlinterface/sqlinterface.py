@@ -95,7 +95,7 @@ def format_indexes_to_sql(ctypes, ColumnsIndexs):
 
 def format_fts_indexes_to_sql(ColumnsIndexsFTS):
     """ in:  ["Col5", "Col6"]
-        out: Col5, Col6
+        out: "Col5, Col6"
     """
     sqls = []
 
@@ -108,6 +108,9 @@ def format_fts_indexes_to_sql(ColumnsIndexsFTS):
 
 
 def format_query_columns_to_sql( ColToReturnNames ):
+    """ in:  ["Col1", "Col2"]
+        out: "Col1, Col2"
+    """
     sqls = []
 
     for col in ColToReturnNames:
@@ -119,6 +122,9 @@ def format_query_columns_to_sql( ColToReturnNames ):
 
 
 def format_where_to_sql( ColToSearchIntoName ):
+    """ in:  ["Col1", "Col2"]
+        out: "Col1 = %s AND Col2 = %s"
+    """
     sqls = []
 
     for col in ColToSearchIntoName:
@@ -130,6 +136,9 @@ def format_where_to_sql( ColToSearchIntoName ):
 
 
 def format_where_fts_to_sql( ColToSearchIntoName ):
+    """ in:  ["Col1", "Col2"]
+        out: "Col1, Col2"
+    """
     sqls = []
 
     for col in ColToSearchIntoName:
@@ -141,6 +150,12 @@ def format_where_fts_to_sql( ColToSearchIntoName ):
 
 
 def format_update_columns_to_sql( ColToReturnNames ):
+    """ in:  {"Col1":1, "Col2":2}
+        out: (
+                "Col1 = %s, Col2 = %s",
+                [1, 2]
+              )
+    """
     sqls = []
     values = []
 
@@ -154,6 +169,12 @@ def format_update_columns_to_sql( ColToReturnNames ):
 
 
 def format_dict_where_to_sql( ColsSearch ):
+    """ in:  {"Col1":1, "Col2":2}
+        out: (
+              "Col1 = %s AND Col2 = %s",
+              [1, 2]
+             )
+    """
     sqls = []
     values = []
 
@@ -167,6 +188,13 @@ def format_dict_where_to_sql( ColsSearch ):
 
 
 def format_insert_columns_to_sql( ColSet ):
+    """ in:  {"Col1":1, "Col2":2}
+        out: (
+              "Col1, Col2",
+              "%s, %s",
+              [1, 2]]
+             )
+    """
     cols_sqls = []
     vals_sqls = []
     values = []
@@ -183,6 +211,12 @@ def format_insert_columns_to_sql( ColSet ):
 
 
 def format_manyinsert_columns_to_sql( Cols ):
+    """ in:  ["Col1", "Col2"]
+        out: (
+              "Col1, Col2",
+              "%s, %s",
+             )
+    """
     cols_sqls = []
     vals_sqls = []
     values = []
