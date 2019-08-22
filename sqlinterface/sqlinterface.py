@@ -11,8 +11,8 @@ MY_CNF_PATH = os.path.join(BASE_DIR, 'my.cnf')
 
 type_map = {
     "PRIMARYKEYAUTO": "BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY",
-    "VARCHAR"       : "VARCHAR(255) CHARACTER SET utf8",
-    "TEXT"          : "TEXT CHARACTER SET utf8",
+    "VARCHAR"       : "VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci",
+    "TEXT"          : "TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci",
     "INT"           : "INT",
     "FLOAT"         : "FLOAT",
     "DATETIME"      : "DATETIME",
@@ -308,7 +308,8 @@ class SQLInterface:
                 {}
                 )
                 DEFAULT CHARSET=utf8
-                ENGINE = InnoDB;
+                ENGINE = InnoDB
+                COLLATE utf8_unicode_ci;
             """.format(
                 TABLEname,
                 cols_sql,

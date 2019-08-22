@@ -337,6 +337,28 @@ class MyTestCase(unittest.TestCase):
         db.SqlDropTable(TABLEname)
 
 
+    def test_25_CaseInsense(self):
+        db = sqlinterface.SQLInterface()
+        db.UseDatabase(self.DBname)
+        TABLEname = "test_table"
+        ColumnsNamesType = ['ID:PrimaryKeyAuto', "Col1:Text", "Col2:INT", "Col3:FLOAT", "Col4:DATETIME", "Col5:Text",
+            "Col6:Text"]
+
+        db.SqlCreateTable(TABLEname, ColumnsNamesType)
+        c = db.SqlInsert(TABLEname, {'Col1': 'The cat 1', 'Col2': 1})
+
+        r = db.SqlSearch(TABLEname, ['Col1'], ['Col1'], ['The cat 1'])
+        self.assertEqual(r, (('The cat 1',),))
+
+        r = db.SqlSearch(TABLEname, ['Col1'], ['Col1'], ['the cat 1'])
+        self.assertEqual(r, (('The cat 1',),))
+
+        r = db.SqlSearch(TABLEname, ['Col1'], ['Col1'], ['THE CAT 1'])
+        self.assertEqual(r, (('The cat 1',),))
+
+        db.SqlDropTable(TABLEname)
+
+
 if __name__ == '__main__':
     unittest.main()
 
