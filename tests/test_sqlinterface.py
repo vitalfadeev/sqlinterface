@@ -344,7 +344,7 @@ class MyTestCase(unittest.TestCase):
         ColumnsNamesType = ['ID:PrimaryKeyAuto', "Col1:Text", "Col2:INT", "Col3:FLOAT", "Col4:DATETIME", "Col5:Text",
             "Col6:Text"]
 
-        db.SqlCreateTable(TABLEname, ColumnsNamesType)
+        db.SqlCreateTable(TABLEname, ColumnsNamesType, ['Col1'])
         c = db.SqlInsert(TABLEname, {'Col1': 'The cat 1', 'Col2': 1})
 
         r = db.SqlSearch(TABLEname, ['Col1'], ['Col1'], ['The cat 1'])
@@ -354,6 +354,28 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(r, (('The cat 1',),))
 
         r = db.SqlSearch(TABLEname, ['Col1'], ['Col1'], ['THE CAT 1'])
+        self.assertEqual(r, (('The cat 1',),))
+
+        db.SqlDropTable(TABLEname)
+
+
+    def test_25_CaseInsense_FTS(self):
+        db = sqlinterface.SQLInterface()
+        db.UseDatabase(self.DBname)
+        TABLEname = "test_table"
+        ColumnsNamesType = ['ID:PrimaryKeyAuto', "Col1:Text", "Col2:INT", "Col3:FLOAT", "Col4:DATETIME", "Col5:Text",
+            "Col6:Text"]
+
+        db.SqlCreateTable(TABLEname, ColumnsNamesType, ['Col1'], ['Col1'])
+        c = db.SqlInsert(TABLEname, {'Col1': 'The cat 1', 'Col2': 1})
+
+        r = db.SqlFTSearch(TABLEname, ['Col1'], ['Col1'], 'cat')
+        self.assertEqual(r, (('The cat 1',),))
+
+        r = db.SqlFTSearch(TABLEname, ['Col1'], ['Col1'], 'Cat')
+        self.assertEqual(r, (('The cat 1',),))
+
+        r = db.SqlFTSearch(TABLEname, ['Col1'], ['Col1'], 'CAT')
         self.assertEqual(r, (('The cat 1',),))
 
         db.SqlDropTable(TABLEname)
