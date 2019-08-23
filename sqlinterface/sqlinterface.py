@@ -232,11 +232,12 @@ def format_manyinsert_columns_to_sql( Cols ):
 
 
 class SQLInterface:
-    def __init__(self, autoconnect=True):
+    def __init__(self, autoconnect=True, my_cnf_path=MY_CNF_PATH):
         """
         :param autoconnect: bool Connect to db on __init__
         """
         self._db = None
+        self.my_cnf_path = my_cnf_path
         if autoconnect:
             self.connect()
 
@@ -245,7 +246,7 @@ class SQLInterface:
         """ Connect to db
             host, username, password in my.cnf, see, please MY_CNF_PATH
         """
-        self._db = MySQLdb.connect(charset='utf8', read_default_file=MY_CNF_PATH, use_unicode=True)
+        self._db = MySQLdb.connect(charset='utf8', read_default_file=self.my_cnf_path, use_unicode=True)
         
         
     def get_connection(self):
