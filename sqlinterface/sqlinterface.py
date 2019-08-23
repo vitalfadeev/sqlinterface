@@ -543,3 +543,9 @@ class SQLInterface:
         Datas = c.fetchall()
 
         return Datas
+
+
+    def raw(self, sql):
+        c = self._db.cursor()
+        c.execute(sql)
+        return c
