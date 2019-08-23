@@ -246,6 +246,10 @@ class SQLInterface:
             host, username, password in my.cnf, see, please MY_CNF_PATH
         """
         self._db = MySQLdb.connect(charset='utf8', read_default_file=MY_CNF_PATH, use_unicode=True)
+        
+        
+    def get_connection(self):
+        return self._db
 
 
     @profile
@@ -271,9 +275,9 @@ class SQLInterface:
 
 
     @profile
-    def SqlCreateTable( self, TABLEname,  ColumnsNamesType, ColumnsIndexs=None, ColumnsIndexsFTS=None):
+    def SqlCreateTable( self, TableName,  ColumnsNamesType, ColumnsIndexs=None, ColumnsIndexsFTS=None):
         """ Creata table
-            :param TABLEname:           ""  table to craete
+            :param TableName:           ""  table to craete
             :param ColumnsNamesType:    []  columns
             :param ColumnsIndexs:       []  columns for index
             :param ColumnsIndexsFTS:    []  collumns for fulltext search indexed
@@ -311,7 +315,7 @@ class SQLInterface:
                 ENGINE = InnoDB
                 COLLATE utf8_unicode_ci;
             """.format(
-                TABLEname,
+                TableName,
                 cols_sql,
                 indexes_sql,
                 fts_indexes_sql
@@ -467,6 +471,7 @@ class SQLInterface:
     def SQLExecuteMany( self, Sql, Array ):
         c = self._db.cursor()
         c.executemany(Sql, Array)
+
         return c
 
 
@@ -501,7 +506,7 @@ class SQLInterface:
 
 
     @profile
-    def SqlExecuteManyRead( self, TABLEname, ColumnName, sqlWhere ):
+    def SqlExecuteManyRead( self, TABLEname, ColumnName, sqlWhere=None ):
         """ Custom select with raw WHERE
             :param TABLEname:   ""  Table name
             :param ColumnName:  []  Columns to return
