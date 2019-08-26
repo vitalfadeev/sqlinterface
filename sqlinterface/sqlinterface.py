@@ -16,6 +16,7 @@ type_map = {
     "INT"           : "INT",
     "FLOAT"         : "FLOAT",
     "DATETIME"      : "DATETIME",
+    "TIME"          : "DATETIME",
     "NUMERIC"       : "FLOAT",
     "BOOLEAN"       : "INT",
     "TAGS"          : "TEXT",
