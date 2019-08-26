@@ -16,6 +16,7 @@ type_map = {
     "INT"           : "INT",
     "FLOAT"         : "FLOAT",
     "DATETIME"      : "DATETIME",
+    "NUMERIC"       : "FLOAT",
 }
 
 
@@ -231,10 +232,34 @@ def format_manyinsert_columns_to_sql( Cols ):
     return (cols_sql, vals_sql)
 
 
+def parse_connection_string(connection_string):
+    # mysql: // user: password @ host:port / database
+    # sqlite: // /path/file.sqlite3
+    if connection_string.startswith("mysql://"):
+        driver = "mysql"
+        rest = connection_string[len("mysql://"):]
+
+        # username / password
+        splits = rest.split("@")
+
+        if len(splits) > 1:
+            userpass = splits[0]
+            rest = splits[1]
+
+        # host:post
+
+    elif connection_string.startswith("sqlite://"):
+        driver = "sqlite"
+        rest = connection_string[len("sqlite://"):]
+    else:
+        raise Exception("Unsupported")
+
+
+
 class SQLInterface:
     def __init__(self, autoconnect=True, my_cnf_path=MY_CNF_PATH):
         """
-        :param autoconnect: bool Connect to db on __init__
+        :param autoconnect:       bool  Connect to db on __init__
         """
         self._db = None
         self.my_cnf_path = my_cnf_path
