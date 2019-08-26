@@ -246,7 +246,8 @@ def get_connetion(connection_string):
         import MySQLdb
         port = o.port       if o.port else 3306
         host = o.hostname   if o.hostname else 'localhost'
-        return MySQLdb.connect( host=host, port=port, user=o.username, password=o.password, db=o.path.strip('/') )
+        dbc = MySQLdb.connect( host=host, port=port, user=o.username, password=o.password, db=o.path.strip('/') )
+        return dbc
 
     elif o.scheme == 'sqlite':
         import sqlite3
@@ -277,11 +278,23 @@ class SQLInterface:
         if self.connection_string:
             # sqlite | mysql with connectin string. ex: mysql://username:password@host:port/DB or sqlite://dbfile.sqlite3
             self._db = get_connetion(self.connection_string)
+            if self.connection_string.startswith('mysql'):
+                self.setup_utf8_support()
         elif self.my_cnf_path:
             # mysql with my.cnf
             self._db = MySQLdb.connect(charset='utf8', read_default_file=self.my_cnf_path, use_unicode=True)
+            self.setup_utf8_support()
         else:
             raise Exception('SQLInterface(): expect one of args: connection_string= or my_cnf_path=')
+
+
+    def setup_utf8_support(self):
+        """ Setup UTF-8 support
+        """
+        self._db.set_character_set('utf8')
+        self._db.query('SET NAMES utf8;')
+        self._db.query('SET CHARACTER SET utf8;')
+        self._db.query('SET character_set_connection=utf8;')
         
         
     def get_connection(self):

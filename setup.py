@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
      name='sqlinterface',
-     version='0.1.5',
+     version='0.1.6',
      scripts=['sqlinterface/sqlinterface.py'] ,
      author="Vitaly Fadeev",
      author_email="vital.fadeev@gmail.com",
