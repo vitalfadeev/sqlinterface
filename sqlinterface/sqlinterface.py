@@ -233,37 +233,34 @@ def format_manyinsert_columns_to_sql( Cols ):
     return (cols_sql, vals_sql)
 
 
-def parse_connection_string(connection_string):
-    # mysql: // user: password @ host:port / database
-    # sqlite: // /path/file.sqlite3
-    if connection_string.startswith("mysql://"):
-        driver = "mysql"
-        rest = connection_string[len("mysql://"):]
+def get_connetion(connection_string):
+    # mysql://user:password@host:port/database
+    # sqlite:///path/file.sqlite3
+    from urllib.parse import urlparse
+    o = urlparse(connection_string)
 
-        # username / password
-        splits = rest.split("@")
+    if o.scheme == 'mysql':
+        import MySQLdb
+        return MySQLdb.connect( host=o.hostname, port=o.port, user=o.username, password=o.password, db=o.path.strip('/') )
 
-        if len(splits) > 1:
-            userpass = splits[0]
-            rest = splits[1]
+    elif o.scheme == 'sqlite':
+        import sqlite3
+        return sqlite3.connect( o.path )
 
-        # host:post
-
-    elif connection_string.startswith("sqlite://"):
-        driver = "sqlite"
-        rest = connection_string[len("sqlite://"):]
     else:
         raise Exception("Unsupported")
 
 
-
 class SQLInterface:
-    def __init__(self, autoconnect=True, my_cnf_path=MY_CNF_PATH):
+    def __init__(self, autoconnect=True, connection_string=None, my_cnf_path=MY_CNF_PATH):
         """
-        :param autoconnect:       bool  Connect to db on __init__
+        :param autoconnect:        bool  Connect to db on __init__
+        :param connection_string:  ""    sqlite:///path/Brain01.sqlite3 | mysql://testuser:testpassword@localhost:3306/Brain01
+        :param my_cnf_path:        ""    Path to my.cnf
         """
         self._db = None
         self.my_cnf_path = my_cnf_path
+        self.connection_string = connection_string
         if autoconnect:
             self.connect()
 
@@ -272,7 +269,14 @@ class SQLInterface:
         """ Connect to db
             host, username, password in my.cnf, see, please MY_CNF_PATH
         """
-        self._db = MySQLdb.connect(charset='utf8', read_default_file=self.my_cnf_path, use_unicode=True)
+        if self.connection_string:
+            # sqlite | mysql with connectin string. ex: mysql://username:password@host:port/DB or sqlite://dbfile.sqlite3
+            self._db = get_connetion(self.connection_string)
+        elif self.my_cnf_path:
+            # mysql with my.cnf
+            self._db = MySQLdb.connect(charset='utf8', read_default_file=self.my_cnf_path, use_unicode=True)
+        else:
+            raise Exception('SQLInterface(): expect one of args: connection_string= or my_cnf_path=')
         
         
     def get_connection(self):

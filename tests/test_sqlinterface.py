@@ -1,3 +1,4 @@
+import os
 import unittest
 import datetime
 import sqlinterface
@@ -10,6 +11,25 @@ class MyTestCase(unittest.TestCase):
 
 
     def test_1_connection(self):
+        import MySQLdb
+        db = sqlinterface.SQLInterface()
+        self.assertIsNotNone(db._db)
+        self.assertIsInstance(db._db, MySQLdb.connections.Connection)
+
+
+    def test_1_connection_sqlite3(self):
+        # get_connetion('mysql://testuser:testpassword@localhost:3306/Brain01')
+        # get_connetion('sqlite:///path/Brain01.sqlite3')
+        import sqlite3
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        db = sqlinterface.SQLInterface(
+            connection_string="sqlite://{}".format( os.path.join(BASE_DIR, 'Brain01.sqlite3' ) )
+        )
+        self.assertIsNotNone(db._db)
+        self.assertIsInstance(db._db, sqlite3.Connection)
+
+
+    def test_1_connection_mysql(self):
         import MySQLdb
         db = sqlinterface.SQLInterface()
         self.assertIsNotNone(db._db)
