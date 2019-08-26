@@ -241,7 +241,9 @@ def get_connetion(connection_string):
 
     if o.scheme == 'mysql':
         import MySQLdb
-        return MySQLdb.connect( host=o.hostname, port=o.port, user=o.username, password=o.password, db=o.path.strip('/') )
+        port = o.port       if o.port else 3306
+        host = o.hostname   if o.hostname else 'localhost'
+        return MySQLdb.connect( host=host, port=port, user=o.username, password=o.password, db=o.path.strip('/') )
 
     elif o.scheme == 'sqlite':
         import sqlite3
