@@ -38,7 +38,7 @@ def profile(func):
 
 
 def get_ctypes(ColumnsNamesType):
-    """ in:  "Col1:Text", "Col2:INT"]
+    """ in:  ["Col1:Text", "Col2:INT"]
         out: {
                  Col1: TEXT,
                  Col2: INT
@@ -57,7 +57,7 @@ def get_ctypes(ColumnsNamesType):
 
 
 def format_cols_to_sql(ctypes):
-    """ in:  { Col1:TEXT", "Col2:INT" }
+    """ in:  { "Col1":"TEXT", "Col2":"INT" |
         out:
              Col1 Text CHARACTER SET utf8,
              Col2 INT
@@ -326,12 +326,18 @@ class SQLInterface:
     @profile
     def SqlCreateTable( self, TableName,  ColumnsNamesType, ColumnsIndexs=None, ColumnsIndexsFTS=None):
         """ Creata table
-            :param TableName:           ""  table to craete
-            :param ColumnsNamesType:    []  columns
+            :param TableName:           ""  table to create
+            :param ColumnsNamesType:    {}  columns. ex: { "Col1":"INT", "Col2":"TEXT" }
             :param ColumnsIndexs:       []  columns for index
-            :param ColumnsIndexsFTS:    []  collumns for fulltext search indexed
+            :param ColumnsIndexsFTS:    []  columns for fulltext search indexed
         """
-        ctypes = get_ctypes(ColumnsNamesType)
+
+        if isinstance(ColumnsNamesType, dict):      # ex: { "Col1":"INT", "Col2":"TEXT" }
+            ctypes = ColumnsNamesType
+        elif isinstance(ColumnsNamesType, list):    # ex: [ "Col1:INT", "Col2:TEXT" ]
+            ctypes = get_ctypes(ColumnsNamesType)
+        else:
+            raise Exception("unsupported")
 
         cols_sql = format_cols_to_sql(ctypes)
 
